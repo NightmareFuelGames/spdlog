@@ -49,6 +49,13 @@ namespace spdlog {
 
 class SPDLOG_API logger {
 public:
+    bool should_log(level::level_enum msg_level) const {
+        int loadedLevel= level_.load(std::memory_order_relaxed);
+        int msg_level_int = static_cast<int>(msg_level);
+        
+        return msg_level_int >= loadedLevel;
+    }
+    
     // Empty logger
     explicit logger(std::string name)
         : name_(std::move(name)),
@@ -122,6 +129,7 @@ public:
         details::log_msg log_msg(loc, name_, lvl, msg);
         log_it_(log_msg, log_enabled, traceback_enabled);
     }
+
 
     void log(level::level_enum lvl, string_view_t msg) { log(source_loc{}, lvl, msg); }
 
@@ -258,10 +266,6 @@ public:
         log(level::critical, msg);
     }
 
-    // return true logging is enabled for the given level.
-    bool should_log(level::level_enum msg_level) const {
-        return msg_level >= level_.load(std::memory_order_relaxed);
-    }
 
     // return true if backtrace logging is enabled.
     bool should_backtrace() const { return tracer_.enabled(); }
@@ -303,7 +307,7 @@ public:
 
     // create new logger with same sinks and configuration.
     virtual std::shared_ptr<logger> clone(std::string logger_name);
-
+    
 protected:
     std::string name_;
     std::vector<sink_ptr> sinks_;
@@ -362,6 +366,7 @@ protected:
     void log_it_(const details::log_msg &log_msg, bool log_enabled, bool traceback_enabled);
     virtual void sink_it_(const details::log_msg &msg);
     virtual void flush_();
+  
     void dump_backtrace_();
     bool should_flush_(const details::log_msg &msg);
 

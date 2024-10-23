@@ -28,6 +28,12 @@ SPDLOG_INLINE const char *to_short_c_str(spdlog::level::level_enum l) SPDLOG_NOE
     return short_level_names[l];
 }
 
+SPDLOG_INLINE const char *to_c_str(spdlog::level::level_enum l) SPDLOG_NOEXCEPT {
+    const spdlog::string_view_t &name = spdlog::level::to_string_view(l);
+    return name.data();
+}
+
+
 SPDLOG_INLINE spdlog::level::level_enum from_str(const std::string &name) SPDLOG_NOEXCEPT {
     auto it = std::find(std::begin(level_string_views), std::end(level_string_views), name);
     if (it != std::end(level_string_views))

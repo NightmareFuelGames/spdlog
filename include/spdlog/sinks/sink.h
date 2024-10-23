@@ -19,7 +19,7 @@ public:
 
     void set_level(level::level_enum log_level);
     level::level_enum level() const;
-    bool should_log(level::level_enum msg_level) const;
+    virtual bool should_log(level::level_enum msg_level) const;
 
 protected:
     // sink log level - default is all
